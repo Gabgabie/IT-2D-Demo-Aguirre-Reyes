@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BarberConnect - Login</title>
+<style>
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #111;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+  }
+  /* Loading screens */
+  .loading-screen {
+    position: fixed;
+    top:0; left:0;
+    width: 100vw; height: 100vh;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  .loading-screen.hidden {
+    display: none;
+  }
+  .spinner {
+    animation: rotate 2s linear infinite;
+  }
+  @keyframes rotate {
+    100% { transform: rotate(360deg); }
+  }
+
+  svg {
+    stroke: #f0b90b;
+  }
+
+  /* Auth container */
+  #auth-container {
+    max-width: 400px;
+    margin: auto;
+    margin-top: 10vh;
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f0b90b;
+    font-size: 15px;
+  }
+
+  h2 {
+    font-family: 'Brush Script MT', cursive;
+    color: #f0b90b;
+    text-align: center;
+    margin-bottom: 20px;
+    user-select: none;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    background: #333;
+    color: white;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #f0b90b;
+    border: none;
+    color: #111;
+    font-weight: 700;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background: #c39c07;
+  }
+
+  .tab-buttons {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    justify-content: center;
+  }
+  .tab-buttons button {
+    width: 120px;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 0;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+  }
+  .tab-buttons button.active {
+    background: #f0b90b;
+    color: #111;
+  }
+  .tab-buttons button:not(.active) {
+    background: transparent;
+    border: 1px solid #f0b90b;
+    color: #f0b90b;
+  }
+
+
+
+  .forgot-pass {
+    background: transparent;
+    border: none;
+    color: #ccc;
+    text-align: right;
+    font-size: 13px;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    user-select: none;
+    padding: 0;
+    width: auto;
+    font-weight: normal;
+  }
+
+  .forgot-pass:hover {
+    background: transparent;
+    color: #f0b90b;
+  }
+
+  #cancel-change-password {
+    cursor: pointer;
+    text-align: center;
+    color: #ccc;
+    margin-top: 10px;
+    font-size: 13px;
+    user-select: none;
+  }
+
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  }
+  .modal.hidden {
+    display: none;
+  }
+  .modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f0b90b;
+    max-width: 400px;
+    width: 90%;
+  }
+</style>
+</head>
+<body>
+
+<!-- Initial Loading Screen -->
+<div id="initial-loading" class="loading-screen" aria-label="Loading initial screen">
+  <svg class="spinner" width="65" height="65" viewBox="0 0 44 44" role="img" aria-label="Loading animation" focusable="false">
+    <g fill="none" fill-rule="evenodd" stroke-width="2">
+      <circle cx="22" cy="22" r="20" stroke-opacity=".5"/>
+      <path d="M42 22c0-11.046-8.954-20-20-20">
+        <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </svg>
+</div>
+
+<!-- Post-login Loading Screen -->
+<div id="post-login-loading" class="loading-screen loading-screen--post hidden" aria-label="Loading after login" >
+  <svg class="spinner" width="65" height="65" viewBox="0 0 44 44" role="img" aria-label="Loading animation" focusable="false">
+    <g fill="none" fill-rule="evenodd" stroke-width="2">
+      <circle cx="22" cy="22" r="20" stroke-opacity=".5"/>
+      <path d="M42 22c0-11.046-8.954-20-20-20">
+        <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </svg>
+</div>
+
+<!-- Auth Container -->
+<div id="auth-container" aria-label="Authentication Panel" role="main" tabindex="-1" aria-live="polite" aria-atomic="true" style="outline:none;">
+
+  <h2>BarberConnect Login</h2>
+
+  <div class="tab-buttons" role="tablist" aria-label="Authentication Tabs">
+    <button id="login-tab-btn" role="tab" aria-selected="true" aria-controls="login-form" tabindex="0" class="active">Login</button>
+    <button id="signup-tab-btn" role="tab" aria-selected="false" aria-controls="signup-form" tabindex="-1">Sign Up</button>
+  </div>
+
+  <!-- Login Form -->
+  <form id="login-form" role="tabpanel" aria-labelledby="login-tab-btn">
+    <label for="login-email">Email or Username</label>
+    <input type="text" id="login-email" name="login-email" required autocomplete="username" />
+
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password" name="login-password" required autocomplete="current-password" />
+
+    <button type="submit" aria-label="Log in">Login</button>
+
+    <button type="button" id="forgot-password-link" class="forgot-pass">Forgot Password?</button>
+  </form>
+
+  <!-- Signup Form -->
+  <form id="signup-form" style="display:none;" role="tabpanel" aria-labelledby="signup-tab-btn">
+    <label for="signup-username">Username</label>
+    <input type="text" id="signup-username" name="signup-username" required autocomplete="username" />
+
+    <label for="signup-email">Email</label>
+    <input type="email" id="signup-email" name="signup-email" required autocomplete="email" />
+
+    <label for="signup-password">Password</label>
+    <input type="password" id="signup-password" name="signup-password" required autocomplete="new-password" />
+
+    <label for="signup-password-confirm">Confirm Password</label>
+    <input type="password" id="signup-password-confirm" name="signup-password-confirm" required autocomplete="new-password" />
+
+    <button type="submit" aria-label="Sign up">Sign Up</button>
+  </form>
+
+  <!-- Change Password Form -->
+  <form id="change-password-form" role="tabpanel" aria-label="Change Password Form" style="display:none;">
+    <label for="current-password">Current Password</label>
+    <input type="password" id="current-password" name="current-password" required autocomplete="current-password" />
+
+    <label for="new-password">New Password</label>
+    <input type="password" id="new-password" name="new-password" required autocomplete="new-password" />
+
+    <label for="confirm-new-password">Confirm New Password</label>
+    <input type="password" id="confirm-new-password" name="confirm-new-password" required autocomplete="new-password" />
+
+    <button type="submit" aria-label="Change password">Change Password</button>
+
+    <div id="cancel-change-password" tabindex="0">Cancel</div>
+  </form>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgot-password-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Reset Password</h2>
+      <label for="reset-email">Email or Username</label>
+      <input type="text" id="reset-email" name="reset-email" required autocomplete="username" />
+      <label for="new-password">New Password</label>
+      <input type="password" id="new-password" name="new-password" required autocomplete="new-password" />
+      <label for="confirm-new-password">Confirm Password</label>
+      <input type="password" id="confirm-new-password" name="confirm-new-password" required autocomplete="new-password" />
+      <button id="send-reset-btn">Reset Password</button>
+      <div id="close-modal" tabindex="0" style="cursor: pointer; text-align: center; color: #ccc; margin-top: 10px; font-size: 13px;">Close</div>
+    </div>
+  </div>
+  
+</div>
+
+<script>
+  // Elements
+  const initialLoading = document.getElementById('initial-loading');
+  const postLoginLoading = document.getElementById('post-login-loading');
+  const authContainer = document.getElementById('auth-container');
+
+  const loginTabBtn = document.getElementById('login-tab-btn');
+  const signupTabBtn = document.getElementById('signup-tab-btn');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const changePasswordForm = document.getElementById('change-password-form');
+  const forgotPasswordLink = document.getElementById('forgot-password-link');
+  const cancelChangePasswordBtn = document.getElementById('cancel-change-password');
+
+  // User DB key
+  const USERS_DB_KEY = "barberconnect_users_db_v1";
+
+  // Seed users with roles: user, customer, admin
+  const seedUsers = [
+    { id: 'u1', username: 'user1', email: 'user1@example.com', password: 'user123', role: 'user', fullname: 'John Doe' },
+    { id: 'c1', username: 'customer1', email: 'customer1@example.com', password: 'cust123', role: 'customer', fullname: 'Jane Smith' },
+    { id: 'a1', username: 'admin1', email: 'admin1@example.com', password: 'admin123', role: 'admin', fullname: 'Admin User' },
+  ];
+
+  // Load users DB
+  let usersDB = [];
+
+  function loadUsersDB() {
+    const raw = localStorage.getItem(USERS_DB_KEY);
+    if (raw) {
+      usersDB = JSON.parse(raw);
+    } else {
+      usersDB = [...seedUsers];
+      saveUsersDB();
+    }
+  }
+
+  function saveUsersDB() {
+    localStorage.setItem(USERS_DB_KEY, JSON.stringify(usersDB));
+  }
+
+  // Load DB on page load
+  loadUsersDB();
+
+  // Initial loading screen show 2s then reveal auth form
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      initialLoading.classList.add('hidden');
+      authContainer.style.display = 'block';
+      authContainer.focus();
+    }, 2000);
+  });
+
+  // Tab switching function with ARIA
+  function switchToLogin() {
+    loginTabBtn.classList.add('active');
+    loginTabBtn.setAttribute('aria-selected', 'true');
+    loginTabBtn.tabIndex = 0;
+
+    signupTabBtn.classList.remove('active');
+    signupTabBtn.setAttribute('aria-selected', 'false');
+    signupTabBtn.tabIndex = -1;
+
+    loginForm.style.display = 'block';
+    loginForm.setAttribute('tabindex', '0');
+    signupForm.style.display = 'none';
+    signupForm.setAttribute('tabindex', '-1');
+    changePasswordForm.style.display = 'none';
+    forgotPasswordLink.style.display = 'block';
+  }
+
+  function switchToSignup() {
+    signupTabBtn.classList.add('active');
+    signupTabBtn.setAttribute('aria-selected', 'true');
+    signupTabBtn.tabIndex = 0;
+
+    loginTabBtn.classList.remove('active');
+    loginTabBtn.setAttribute('aria-selected', 'false');
+    loginTabBtn.tabIndex = -1;
+
+    signupForm.style.display = 'block';
+    signupForm.setAttribute('tabindex', '0');
+    loginForm.style.display = 'none';
+    loginForm.setAttribute('tabindex', '-1');
+    changePasswordForm.style.display = 'none';
+    forgotPasswordLink.style.display = 'none';
+  }
+
+  loginTabBtn.onclick = () => switchToLogin();
+  signupTabBtn.onclick = () => switchToSignup();
+
+  // Forgot password: show modal
+  forgotPasswordLink.onclick = () => {
+    document.getElementById('forgot-password-modal').classList.remove('hidden');
+  };
+
+  // Close modal
+  document.getElementById('close-modal').onclick = () => {
+    document.getElementById('forgot-password-modal').classList.add('hidden');
+  };
+
+  // Send reset link
+  document.getElementById('send-reset-btn').onclick = () => {
+    const resetEmail = document.getElementById('reset-email').value;
+    const newPwd = document.getElementById('new-password').value;
+    const confirmPwd = document.getElementById('confirm-new-password').value;
+    if (newPwd && confirmPwd && resetEmail) {
+      if (newPwd === confirmPwd) {
+        // Find user by email or username
+        const user = usersDB.find(u => u.email === resetEmail || u.username === resetEmail);
+        if (user) {
+          user.password = newPwd;
+          saveUsersDB();
+          alert('Password reset successful!');
+          document.getElementById('forgot-password-modal').classList.add('hidden');
+        } else {
+          alert('User not found!');
+        }
+      } else {
+        alert('Passwords do not match!');
+      }
+    } else {
+      alert('Please fill in all fields.');
+    }
+  };
+
+  cancelChangePasswordBtn.onclick = () => {
+    changePasswordForm.style.display = 'none';
+    switchToLogin();
+  };
+
+  // Handle login form submit
+  loginForm.onsubmit = e => {
+    e.preventDefault();
+    const username = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    // Find user
+    const user = usersDB.find(u => (u.username === username || u.email === username) && u.password === password);
+    if (user) {
+      // Store logged in user in sessionStorage
+      sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+      // Set login status in localStorage for navbar update
+      localStorage.setItem('loggedIn', 'true');
+
+      // Hide auth container, show post-login loading screen
+      authContainer.style.display = 'none';
+      postLoginLoading.classList.remove('hidden');
+
+      // Simulate loading then redirect based on role
+      setTimeout(() => {
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html'; // Redirect to admin page
+        } else if (user.role === 'customer') {
+          window.location.href = 'example_Barber.html'; // Redirect to customer page
+        } else {
+          window.location.href = 'example_Barber.html'; // Redirect to main page for users
+        }
+      }, 2000);
+    } else {
+      alert('Invalid username/email or password!');
+    }
+  };
+
+  // Handle signup form submit
+  signupForm.onsubmit = e => {
+    e.preventDefault();
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const pwd = document.getElementById('signup-password').value;
+    const confirmPwd = document.getElementById('signup-password-confirm').value;
+    if (pwd !== confirmPwd) {
+      alert('Passwords do not match!');
+      return;
+    }
+    // Check if email or username exists
+    const exists = usersDB.find(u => u.email === email || u.username === username);
+    if (exists) {
+      alert('Email or username already exists!');
+      return;
+    }
+    // Create new user with role 'user'
+    const newUser = {
+      id: 'u' + (usersDB.length + 1),
+      username: username,
+      email: email,
+      password: pwd,
+      role: 'user',
+      fullname: username
+    };
+    usersDB.push(newUser);
+    saveUsersDB();
+    alert('Signup successful! Please login now.');
+    switchToLogin();
+  };
+
+  // Handle change password submit
+  changePasswordForm.onsubmit = e => {
+    e.preventDefault();
+    const currentPwd = document.getElementById('current-password').value;
+    const newPwd = document.getElementById('new-password').value;
+    const confirmNewPwd = document.getElementById('confirm-new-password').value;
+    if (newPwd !== confirmNewPwd) {
+      alert('New passwords do not match!');
+      return;
+    }
+    // Assume logged in user (for change password, perhaps after login)
+    const loggedUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+    if (loggedUser && loggedUser.password === currentPwd) {
+      loggedUser.password = newPwd;
+      // Update in DB
+      const idx = usersDB.findIndex(u => u.id === loggedUser.id);
+      usersDB[idx] = loggedUser;
+      saveUsersDB();
+      alert('Password changed successfully!');
+      changePasswordForm.style.display = 'none';
+      switchToLogin();
+    } else {
+      alert('Current password is incorrect!');
+    }
+  };
+
+</script>
+</body>
+</html>

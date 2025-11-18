@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BarberConnect - Profile</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #111;
+    color: white;
+    scroll-behavior: smooth;
+  }
+
+  /* Navbar */
+  nav#nav {
+    background-color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
+
+  nav .logo {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 28px;
+    color: white;
+    font-weight: 500;
+  }
+
+  nav .logout-btn {
+    background-color: #f0b90b;
+    border: none;
+    color: #111;
+    font-weight: 700;
+    padding: 7px 18px;
+    cursor: pointer;
+    border-radius: 40px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+
+  nav .logout-btn:hover {
+    background-color: #c39c07;
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+  }
+
+  .back-btn:hover {
+    color: #f0b90b;
+  }
+
+  /* Profile Container */
+  .profile-container {
+    max-width: 900px;
+    margin: 120px auto 80px auto;
+    padding: 30px;
+    background-color: #222;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f0b90b;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .profile-header h1 {
+    font-family: 'Brush Script MT', cursive;
+    color: #f0b90b;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+
+  .profile-header p {
+    font-size: 16px;
+    color: #ccc;
+  }
+
+  /* Appointments Section */
+  .appointments-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #f0b90b;
+  }
+
+  .appointment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  .appointment-table th,
+  .appointment-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+  }
+
+  .appointment-table th {
+    background-color: #333;
+    color: #f0b90b;
+    font-weight: 600;
+  }
+
+  .appointment-table td {
+    background-color: #222;
+    color: white;
+  }
+
+  .appointment-table tbody tr:hover {
+    background-color: #333;
+  }
+
+  .appointment-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .btn-edit {
+    background-color: #f0b90b;
+    color: #111;
+  }
+
+  .btn-edit:hover {
+    background-color: #c39c07;
+  }
+
+  .btn-delete {
+    background-color: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background-color: #c0392b;
+  }
+
+  .btn-cancel {
+    background-color: #ff9800;
+    color: white;
+  }
+
+  .btn-cancel:hover {
+    background-color: #e68900;
+  }
+
+  /* Modal for Editing */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f0b90b;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .modal-content h2 {
+    color: #f0b90b;
+    margin-bottom: 20px;
+  }
+
+  .modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .modal-content input,
+  .modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+  }
+
+  .modal-content .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .modal-actions .btn {
+    padding: 10px 20px;
+  }
+
+  .btn-cancel {
+    background-color: #666;
+    color: white;
+  }
+
+  .btn-cancel:hover {
+    background-color: #555;
+  }
+
+  /* No Appointments */
+  .no-appointments {
+    text-align: center;
+    color: #ccc;
+    font-size: 16px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .appointment-table {
+      overflow-x: auto;
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <button class="back-btn" onclick="window.location.href='example_Barber.html'" aria-label="Go back to Razor Works"><i class="fas fa-arrow-left"></i></button>
+  <div class="logo">BarberConnect</div>
+  <button class="logout-btn" onclick="logout()">LOGOUT</button>
+</nav>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Your Profile</h1>
+    <p id="user-info">Welcome back!</p>
+  </div>
+
+  <div class="appointments-section">
+    <h2>Recent Appointments</h2>
+    <table class="appointment-table" id="recent-appointment-table">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Barber</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Recent appointments will be populated here -->
+      </tbody>
+    </table>
+    <div class="no-appointments" id="no-recent-appointments" style="display: none;">No recent appointments found.</div>
+  </div>
+
+
+
+  <div class="appointments-section">
+    <h2>Done Appointments</h2>
+    <table class="appointment-table" id="done-appointment-table">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Barber</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Done appointments will be populated here -->
+      </tbody>
+    </table>
+    <div class="no-appointments" id="no-done-appointments" style="display: none;">No done appointments found.</div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Reschedule Appointment</h2>
+    <form id="edit-form">
+      <label for="edit-date">New Date</label>
+      <input type="date" id="edit-date" required />
+
+      <label for="edit-time">New Time</label>
+      <input type="time" id="edit-time" required />
+
+      <label for="edit-service">Service</label>
+      <select id="edit-service" required>
+        <option value="Hair Cut">Hair Cut</option>
+        <option value="Hair Cut & Style">Hair Cut & Style</option>
+        <option value="Shave | Re-Shape">Shave | Re-Shape</option>
+        <option value="Shampoo Blow Dry">Shampoo Blow Dry</option>
+        <option value="Hair and Scalp Spa">Hair and Scalp Spa</option>
+        <option value="Hair Color">Hair Color</option>
+        <option value="Hot Towel with Massage (15 mins)">Hot Towel with Massage (15 mins)</option>
+        <option value="Hot Towel with Massage (30 mins)">Hot Towel with Massage (30 mins)</option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-edit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Appointments DB key
+  const APPOINTMENTS_DB_KEY = "barberconnect_appointments_db_v1";
+
+  // Seed some dummy appointments for demo (in real app, this would come from bookings)
+  // Added some past dates for "done" appointments
+  const seedAppointments = [
+    { id: 'a1', userId: 'u1', service: 'Hair Cut', date: '2023-10-15', time: '10:00', status: 'confirmed' },
+    { id: 'a2', userId: 'c1', service: 'Hair Cut & Style', date: '2023-10-20', time: '14:00', status: 'confirmed' },
+    { id: 'a3', userId: 'u1', service: 'Shave | Re-Shape', date: '2023-10-25', time: '16:00', status: 'confirmed' },
+    { id: 'a4', userId: 'u1', service: 'Hair Color', date: '2023-09-10', time: '11:00', status: 'completed' }, // Past date
+    { id: 'a5', userId: 'c1', service: 'Hot Towel with Massage (15 mins)', date: '2023-09-05', time: '15:00', status: 'completed' }, // Past date
+  ];
+
+  let appointmentsDB = [];
+
+  function loadAppointmentsDB() {
+    const raw = localStorage.getItem(APPOINTMENTS_DB_KEY);
+    if (raw) {
+      appointmentsDB = JSON.parse(raw);
+    } else {
+      appointmentsDB = [...seedAppointments];
+      saveAppointmentsDB();
+    }
+  }
+
+  function saveAppointmentsDB() {
+    localStorage.setItem(APPOINTMENTS_DB_KEY, JSON.stringify(appointmentsDB));
+  }
+
+  // Get logged-in user
+  const loggedUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+  if (!loggedUser) {
+    alert('Please log in first.');
+    window.location.href = 'login.html';
+  }
+
+  // Load DB
+  loadAppointmentsDB();
+
+  // Display user info
+  document.getElementById('user-info').textContent = `Welcome back, ${loggedUser ? (loggedUser.fullname || loggedUser.username || 'User') : 'User'}! (${loggedUser ? loggedUser.role : 'Unknown'})`;
+
+  // Display appointments
+  function displayAppointments() {
+    const recentTable = document.getElementById('recent-appointment-table').querySelector('tbody');
+    const doneTable = document.getElementById('done-appointment-table').querySelector('tbody');
+    const noRecent = document.getElementById('no-recent-appointments');
+    const noDone = document.getElementById('no-done-appointments');
+
+    recentTable.innerHTML = '';
+    doneTable.innerHTML = '';
+
+    const userAppointments = appointmentsDB.filter(app => app.userId === loggedUser.id);
+
+    const recentApps = userAppointments.filter(app => app.status === 'confirmed' || app.status === 'pending');
+    const doneApps = userAppointments.filter(app => app.status === 'completed');
+
+    // Recent appointments
+    if (recentApps.length === 0) {
+      noRecent.style.display = 'block';
+    } else {
+      noRecent.style.display = 'none';
+      recentApps.forEach(app => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${app.service}</td>
+          <td>${app.barber || 'N/A'}</td>
+          <td>${app.date}</td>
+          <td>${app.time}</td>
+          <td>${app.status}</td>
+          <td>
+            <div class="appointment-actions">
+              <button class="btn btn-edit" onclick="editAppointment('${app.id}')">Reschedule</button>
+              <button class="btn btn-cancel" onclick="deleteAppointment('${app.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+        recentTable.appendChild(tr);
+      });
+    }
+
+    // Done appointments
+    if (doneApps.length === 0) {
+      noDone.style.display = 'block';
+    } else {
+      noDone.style.display = 'none';
+      doneApps.forEach(app => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${app.service}</td>
+          <td>${app.barber || 'N/A'}</td>
+          <td>${app.date}</td>
+          <td>${app.time}</td>
+          <td>${app.status}</td>
+        `;
+        doneTable.appendChild(tr);
+      });
+    }
+  }
+
+  // Edit appointment
+  let currentEditId = null;
+  function editAppointment(id) {
+    const app = appointmentsDB.find(a => a.id === id);
+    if (!app) return;
+
+    currentEditId = id;
+    document.getElementById('edit-date').value = app.date;
+    document.getElementById('edit-time').value = app.time;
+    document.getElementById('edit-service').value = app.service;
+    document.getElementById('edit-modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('edit-modal').classList.add('hidden');
+  }
+
+  // Handle edit form submit
+  document.getElementById('edit-form').onsubmit = e => {
+    e.preventDefault();
+    const newDate = document.getElementById('edit-date').value;
+    const newTime = document.getElementById('edit-time').value;
+    const newService = document.getElementById('edit-service').value;
+
+    const app = appointmentsDB.find(a => a.id === currentEditId);
+    if (app) {
+      app.date = newDate;
+      app.time = newTime;
+      app.service = newService;
+      saveAppointmentsDB();
+      displayAppointments();
+      closeModal();
+      alert('Appointment rescheduled successfully!');
+    }
+  };
+
+  // Cancel appointment
+  function cancelAppointment(id) {
+    const app = appointmentsDB.find(a => a.id === id);
+    if (app) {
+      app.status = 'cancelled';
+      saveAppointmentsDB();
+      displayAppointments();
+      alert('Appointment cancelled successfully!');
+    }
+  }
+
+  // Delete appointment
+  function deleteAppointment(id) {
+    appointmentsDB = appointmentsDB.filter(a => a.id !== id);
+    saveAppointmentsDB();
+    displayAppointments();
+    alert('Appointment deleted successfully!');
+  }
+
+  // Logout
+  function logout() {
+    sessionStorage.removeItem('loggedInUser');
+    window.location.href = 'example_Barber.html';
+  }
+
+  // Initial display
+  if (loggedUser) {
+    displayAppointments();
+  }
+</script>
+</body>
+</html>

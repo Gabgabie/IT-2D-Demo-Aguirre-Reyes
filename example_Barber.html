@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BarberConnect - Razor Works</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #111;
+    color: white;
+    scroll-behavior: smooth;
+  }
+
+  /* Navbar */
+  nav#nav {
+    background-color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+  }
+
+  .back-btn:hover {
+    color: #f0b90b;
+  }
+
+  nav .logo {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 28px;
+    color: white;
+    font-weight: 500;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+  }
+
+  nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 6px 8px;
+    transition: color 0.3s ease;
+    cursor: pointer;
+  }
+
+  nav ul li a:hover {
+    color: #f0b90b;
+  }
+
+  nav .login-btn {
+    background-color: #f0b90b;
+    border: none;
+    color: #111;
+    font-weight: 700;
+    padding: 7px 18px;
+    cursor: pointer;
+    border-radius: 40px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+
+  nav .login-btn:hover {
+    background-color: #c39c07;
+  }
+
+  /* Hero Section */
+  .hero {
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    padding: 120px 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 650px;
+    z-index: 1;
+  }
+
+  .razor-works {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+    color: white;
+    user-select: none;
+  }
+
+  .hero h1 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 28px;
+  }
+
+  .hero h2 {
+    font-weight: 500;
+    font-size: 18px;
+    margin-bottom: 18px;
+    color: #f0b90b;
+  }
+
+  .hero p {
+    font-size: 14px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    max-width: 95%;
+    color: #ccc;
+  }
+
+  .btn-book {
+    background-color: #868686;
+    border: none;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    border-radius: 40px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(134,134,134,0.6);
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-book:hover {
+    background-color: #c7c7c7;
+    color: #111;
+  }
+
+  .btn-book svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+  }
+
+  .btn-book:hover svg {
+    fill: #111;
+  }
+
+  .open-hours {
+    margin-top: 50px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 1.6px;
+  }
+
+  /* About Section */
+  #about {
+    background-color: #555;
+    padding: 80px 50px 80px 50px;
+    max-width: 900px;
+    margin: 0 auto;
+    margin-top: 0;
+    line-height: 1.6;
+    color: white;
+  }
+
+  #about h2 {
+    text-align: center;
+    font-family: 'Brush Script MT', cursive;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    user-select: none;
+  }
+
+  #about p {
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  #about p span {
+    font-weight: 700;
+    color: #f0b90b;
+  }
+
+  /* Our Services Table */
+  #services {
+    background-color: #555;
+    max-width: 700px;
+    margin: 40px auto 80px auto;
+    padding: 20px 40px 40px 40px;
+    border: 1px solid #444;
+    color: white;
+    font-size: 15px;
+  }
+
+  #services h3 {
+    text-align: center;
+    font-family: 'Brush Script MT', cursive;
+    font-size: 2rem;
+    margin-bottom: 15px;
+    user-select: none;
+  }
+
+  #services table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  #services th, #services td {
+    border-bottom: 1px solid #444;
+    padding: 12px 10px;
+    text-align: left;
+  }
+
+  #services th {
+    text-align: left;
+    font-weight: 700;
+  }
+
+  #services .service {
+    width: 65%;
+  }
+
+  #services .price {
+    width: 35%;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* Hot Towel with Massage style row */
+  #services .hot-towel {
+    font-weight: 700;
+    text-align: center;
+    border-top: 1px solid #666;
+    padding: 10px 0;
+    font-size: 16px;
+  }
+
+  /* Professional Team Section */
+  #team {
+    background-image: url('bg3.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #555; /* Fallback */
+    padding: 80px 30px 60px 30px;
+    max-width: 1200px;
+    margin: 0 auto 80px auto;
+    color: white;
+    text-align: center;
+  }
+
+  #team .subtitle {
+    font-size: 12px;
+    color: #f0b90b;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    user-select: none;
+  }
+
+  #team h2 {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    user-select: none;
+  }
+
+  .team-members {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .member {
+    max-width: 220px;
+    background-color: #222;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.7);
+    transition: transform 0.3s ease;
+  }
+
+  .member:hover {
+    transform: scale(1.05);
+  }
+
+  .member img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+
+  .member .name {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 4px;
+    user-select: none;
+  }
+
+  .member .role {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f0b90b;
+    user-select: none;
+  }
+
+  /* Vertical Reviews Section */
+  #reviews {
+    background-color: #555;
+    padding: 60px 30px 80px 30px;
+    max-width: 900px;
+    margin: 0 auto 80px auto;
+    color: white;
+    text-align: center;
+  }
+
+  #reviews h2 {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    user-select: none;
+  }
+
+  .review-scroll-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 15px;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .review-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .review-card {
+    width: 100%;
+    background-color: #222;
+    border-radius: 25px;
+    padding: 30px 25px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.8);
+    color: white;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .reviewer-photo img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f0b90b;
+  }
+
+  .review-content {
+    text-align: left;
+    flex-grow: 1;
+  }
+
+  .reviewer-name {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #f0b90b;
+    user-select: none;
+  }
+
+  .reviewer-desc {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #f0b90b;
+    user-select: none;
+  }
+
+  .stars {
+    color: #f0b90b;
+    font-size: 18px;
+    margin-bottom: 20px;
+    user-select: none;
+  }
+
+  .review-text {
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+  }
+
+  /* Highlight bold intro in Lawrence and Francis */
+  .highlight-header {
+    color: #f0b90b;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  /* Booking Section */
+  #booking {
+    background-image: url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=400&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #777; /* Fallback */
+    padding: 80px 50px;
+    max-width: 700px;
+    margin: 0 auto;
+    color: white;
+    text-align: center;
+  }
+
+  #booking h2 {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    user-select: none;
+  }
+
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .booking-form label {
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .booking-form input,
+  .booking-form select,
+  .booking-form textarea {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+  }
+
+  .booking-form textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .booking-form button {
+    background-color: #f0b90b;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .booking-form button:hover {
+    background-color: #c39c07;
+  }
+
+  /* Footer */
+  footer {
+    background-color: #555;
+    padding: 40px 50px;
+    color: white;
+    font-size: 14px;
+    user-select:none;
+  }
+
+  footer .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  footer .footer-container > div {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  footer .footer-container .logo-footer {
+    flex: 1 0 100%;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+
+
+  footer h4 {
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  footer ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  footer ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  footer ul li a:hover {
+    color: #f0b90b;
+  }
+
+  footer .social-icons {
+    display: flex;
+    gap: 20px;
+    font-size: 20px;
+  }
+
+  footer .social-icons a {
+    color: white;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+  }
+
+  footer .social-icons a.pinterest:hover {
+    color: #bd081c;
+  }
+  footer .social-icons a.facebook:hover {
+    color: #1877f2;
+  }
+  footer .social-icons a.instagram:hover {
+    color: #e4405f;
+  }
+  footer .social-icons a.x:hover {
+    color: #1da1f2;
+  }
+
+  footer .contact-item p {
+    margin: 6px 0;
+    font-weight: 400;
+  }
+
+  footer .contact-item p svg {
+    margin-right: 8px;
+    vertical-align: middle;
+    fill: #f0b90b;
+  }
+
+  /* Responsive */
+  @media (max-width: 850px) {
+    .team-members {
+      gap: 30px;
+      justify-content: center;
+    }
+    .member {
+      max-width: 180px;
+    }
+    .member img {
+      height: 240px;
+    }
+    .contact-info {
+      gap: 30px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .team-members {
+      flex-direction: column;
+      align-items: center;
+    }
+    .review-card {
+      width: 90vw;
+    }
+    .contact-info, footer .footer-container {
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">BarberConnect</div>
+  <ul>
+    <li><a href="#hero">HOME</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#services">SERVICES</a></li>
+    <li><a href="#team">BARBERS</a></li>
+    <li><a href="#reviews">REVIEWS</a></li>
+    <li><a href="#footer">CONTACT</a></li>
+  </ul>
+  <button class="login-btn" onclick="window.location.href='login.html'">LOGIN</button>
+</nav>
+
+<section id="hero" class="hero" aria-label="BarberConnect Razor Works main section">
+  <div class="hero-content">
+    <div class="razor-works" aria-label="Razor Works logo text">RAZOR WORKS</div>
+    <h1>Welcome to BarberConnect: Razor Works</h1>
+    <h2>Digital Online Booking</h2>
+    <p>Step into Razor Works for a premium grooming experience where tradition meets modern style precision</p>
+    <button class="btn-book" aria-label="Book Appointment" onclick="window.location.href='booking.html';">
+      BOOK APPOINTMENT
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 14H5V10h14Zm0-12v2H5V6Z"/></svg>
+    </button>
+    <div class="open-hours">OPEN MONDAY - SUNDAY 10AM-9PM</div>
+  </div>
+</section>
+
+<section id="about" aria-label="About BarberConnect">
+  <h2>About <span>BarberConnect</span></h2>
+
+  <p>At BarberConnect, we empower barbershops to grow, organize, and connect with their clients in a modern, digital way. Our platform is designed to simplify appointment management, enhance customer experience, and help barbers focus on what they do best — delivering excellent grooming services.</p>
+
+  <p><strong>Our Purpose</strong>: We understand the challenges of managing walk-ins, scheduling clients, and handling daily operations. BarberConnect was built to give barbershops a smart and efficient booking system that runs 24/7. Whether you are managing a busy shop or working independently, our system ensures your clients can easily find available timeslots, choose their preferred barber, and book appointments anytime, anywhere.</p>
+
+  <p><strong>What We Offer</strong>:</p>
+  <ul>
+    <li>Easy Appointment Management: Access, reschedule, or cancel bookings in just a few clicks.</li>
+    <li>Automated Notifications: Reduce no-shows with real-time reminders for both barbers and clients.</li>
+    <li>Profile & Service Customization: Showcase your barbers, services, and pricing to attract more customers.</li>
+    <li>Performance Insights: Track customer trends, most-booked services, and staff productivity.</li>
+  </ul>
+
+  <p><strong>Why Choose BarberConnect</strong>:</p>
+  <p>BarberConnect bridges the gap between traditional service and modern convenience. It gives barbershops a professional online presence while offering clients a seamless booking experience. Our user-friendly dashboard and real-time updates help barbers spend less time managing schedules and more time perfecting every cut.</p>
+
+  <p><strong>Our Mission</strong>: To transform the barbershop experience by connecting barbers and clients through a digital platform built on trust, convenience, and community.<br />
+  Join BarberConnect — where technology meets tradition, and every booking brings people together.</p>
+</section>
+
+<section id="services" aria-label="Our Services">
+  <h3>OUR SERVICES</h3>
+  <table>
+    <tbody>
+      <tr><td class="service">HAIR CUT</td><td class="price">PHP120</td></tr>
+      <tr><td class="service">HAIR CUT & STYLE</td><td class="price">PHP190</td></tr>
+      <tr><td class="service">SHAVE | RE-SHAPE</td><td class="price">PHP80</td></tr>
+      <tr><td class="service">SHAMPOO BLOW DRY</td><td class="price">PHP50</td></tr>
+      <tr><td class="service">HAIR AND SCALP SPA</td><td class="price">PHP250</td></tr>
+      <tr><td class="service">HAIR COLOR</td><td class="price">PHP290</td></tr>
+      <tr><td colspan="2" class="hot-towel">HOT TOWEL WITH MASSAGE</td></tr>
+      <tr><td class="service">15 MINS</td><td class="price">PHP150</td></tr>
+      <tr><td class="service">30 MINS</td><td class="price">PHP250</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="team" aria-label="Professional Team">
+  <div class="subtitle">PROFESSIONAL TEAM</div>
+  <h2>THE MASTERS BEHIND THE CHAIRS</h2>
+  <div class="team-members">
+    <div class="member">
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Pitoy Owner Photo" />
+      <div class="name">PITOY</div>
+      <div class="role">OWNER</div>
+    </div>
+    <div class="member">
+      <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80" alt="Elsa Cashier Photo" />
+      <div class="name">ELSA</div>
+      <div class="role">CASHIER</div>
+    </div>
+    <div class="member">
+      <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80" alt="Tommy Stylist Photo" />
+      <div class="name">TOMMY</div>
+      <div class="role">STYLIST</div>
+    </div>
+    <div class="member">
+      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80" alt="Buboy Barber Photo" />
+      <div class="name">BUBOY</div>
+      <div class="role">BARBER</div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" aria-label="Reviews">
+  <h2>REVIEWS</h2>
+  <div class="review-scroll-container">
+    <div class="review-card">
+      <div class="reviewer-photo">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Photo of Michael, Regular Customer" />
+      </div>
+      <div class="review-content">
+        <div class="stars" aria-label="5 star rating" role="img">★★★★★</div>
+        <div class="reviewer-name">Michael</div>
+        <div class="reviewer-desc">Regular Customer</div>
+        <div class="review-text">
+          Great experience! The atmosphere is welcoming and the staff is professional. Highly recommend for a premium haircut.
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="reviewer-photo">
+        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Photo of Lawrence, Regular Customer" />
+      </div>
+      <div class="review-content">
+        <div class="stars" aria-label="5 star rating" role="img">★★★★★</div>
+        <div class="reviewer-name">Lawrence</div>
+        <div class="reviewer-desc">Regular Customer</div>
+        <div class="review-text">
+          The place is nice and warm. The haircut fit perfectly, and the online booking is convenient. 5 stars!
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="reviewer-photo">
+        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Photo of Francis, Regular Customer" />
+      </div>
+      <div class="review-content">
+        <div class="stars" aria-label="5 star rating" role="img">★★★★★</div>
+        <div class="reviewer-name">Francis</div>
+        <div class="reviewer-desc">Regular Customer</div>
+        <div class="review-text">
+          Quality and affordable services. The staff is kind, the place is clean and organized. Love it!
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Footer as per your screenshot -->
+<footer id="footer">
+  <div class="footer-container">
+    <div class="logo-footer">
+      <div class="logo">BarberConnect</div>
+    </div>
+
+    <div>
+      <h3>BARBER SHOP</h3>
+    </div>
+
+    <div>
+      <h4>COMPANY</h4>
+      <ul>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">Award</a></li>
+        <li><a href="#">Career</a></li>
+        <li><a href="#">Location</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>HELP</h4>
+      <ul>
+        <li><a href="#">Terms and condition</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">How it works?</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>GET IN TOUCH</h4>
+      <div class="contact-item">
+        <p>📞 09123456789</p>
+        <p>✉️ razorconnect@gmail.com</p>
+        <p>📍 Alcalde Jose kapasigan Pasig city</p>
+        <div class="social-icons" aria-label="Social media links">
+          <a href="https://facebook.com" target="_blank" rel="noopener" class="facebook" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://youtube.com" target="_blank" rel="noopener" class="youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://twitter.com" target="_blank" rel="noopener" class="x" aria-label="X (Twitter)"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('load', () => {
+    const loginBtn = document.querySelector('.login-btn');
+    if (localStorage.getItem('loggedIn') === 'true') {
+      loginBtn.innerHTML = '<i class="fas fa-user" aria-label="Profile"></i>';
+      loginBtn.onclick = () => {
+        window.location.href='profile.html';
+      };
+    }
+  });
+</script>
+</body>
+</html>

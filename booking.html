@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Book Appointment - Razor Works</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2c2c2c 50%, #1f1f1f 100%);
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    user-select: none;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Container */
+  .booking-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #2c2c2c;
+    border-radius: 8px;
+    padding: 20px 30px;
+    box-shadow: inset 0 0 35px #00000090;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 25px;
+    font-size: 28px;
+  }
+
+  /* Step content containers */
+  .step {
+    display: none;
+  }
+
+  .step.active {
+    display: block;
+  }
+
+  /* Buttons */
+  button {
+    background-color: #c11f1f;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select:none;
+  }
+
+  button:hover:not(:disabled) {
+    background-color: #9e1a1a;
+  }
+
+  button:disabled {
+    background-color: #6b6b6b;
+    cursor: not-allowed;
+  }
+
+  /* Cancel Button */
+  .cancel-btn {
+    background-color: #444;
+    margin-right: 10px;
+  }
+
+  /* Service Selection Buttons */
+  .service-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .service-list button {
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+    border: 2px solid transparent;
+    min-width: 140px;
+    max-width: 180px;
+    white-space: normal;
+  }
+
+  .service-list button.selected {
+    background-color: #f0b90b;
+    color: #111;
+    border-color: #c39c07;
+  }
+
+  /* Schedule Date Picker */
+  .date-picker {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  input[type="date"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+    user-select:none;
+  }
+
+  /* Time slots */
+  .time-slots {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .time-slots button {
+    background-color: #444;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    user-select:none;
+    min-width: 80px;
+  }
+
+  .time-slots button.selected {
+    background-color: #f0b90b;
+    color: #111;
+    border-color: #c39c07;
+  }
+
+  /* Summary box */
+  .summary-box {
+    background: #222;
+    padding: 20px;
+    border-radius: 8px;
+    line-height: 1.4;
+    font-size: 16px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Confirmation Success */
+  .success-message {
+    background-color: #1a472a;
+    padding: 30px 25px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 20px;
+    color: #b6efb0;
+    border: 2px solid #7ad67a;
+    max-width: 700px;
+    margin: 30px auto 0;
+  }
+
+  /* Barber Selection */
+  .barber-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .barber-list button {
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+    border: 2px solid transparent;
+    min-width: 140px;
+    max-width: 180px;
+    white-space: normal;
+  }
+
+  .barber-list button.selected {
+    background-color: #f0b90b;
+    color: #111;
+    border-color: #c39c07;
+  }
+
+  /* Special Requests */
+  .special-requests {
+    margin-top: 20px;
+  }
+
+  .special-requests textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    background: #444;
+    color: white;
+    resize: vertical;
+  }
+
+  .special-requests textarea::placeholder {
+    color: #ccc;
+  }
+
+  /* Hover effects */
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .service-list button, .time-slots button, .barber-list button {
+      min-width: 100px;
+      font-size: 13px;
+    }
+  }
+
+
+</style>
+</head>
+<body>
+
+<div class="booking-container" role="main" aria-label="Appointment booking steps">
+
+  <h1>Book Your Appointment</h1>
+
+  <!-- Step 1: Select Service and Barber -->
+  <section id="step1" class="step active" aria-label="Select Service and Barber">
+    <h2>Select Barber</h2>
+    <div class="barber-list" role="list" aria-live="polite">
+      <button type="button" data-barber="John Doe">JOHN DOE</button>
+      <button type="button" data-barber="James Smith">JAMES SMITH</button>
+      <button type="button" data-barber="Mike Johnson">MIKE JOHNSON</button>
+      <button type="button" data-barber="Alex Brown">ALEX BROWN</button>
+      <button type="button" data-barber="Sam Lee">SAM LEE</button>
+    </div>
+    <h2>Select Service</h2>
+    <div class="service-list" role="list" aria-live="polite">
+      <button type="button" data-service="Hair Cut" data-price="120">HAIR CUT<br>PHP120</button>
+      <button type="button" data-service="Hair Cut & Style" data-price="190">HAIR CUT & STYLE<br>PHP190</button>
+      <button type="button" data-service="Shave | Re-Shape" data-price="80">SHAVE | RE-SHAPE<br>PHP80</button>
+      <button type="button" data-service="Shampoo Blow Dry" data-price="50">SHAMPOO BLOW DRY<br>PHP50</button>
+      <button type="button" data-service="Hair and Scalp Spa" data-price="250">HAIR AND SCALP SPA<br>PHP250</button>
+      <button type="button" data-service="Hair Color" data-price="290">HAIR COLOR<br>PHP290</button>
+      <button type="button" data-service="Hot Towel with Massage (15 mins)" data-price="150">HOT TOWEL MASSAGE 15 MIN<br>PHP150</button>
+      <button type="button" data-service="Hot Towel with Massage (30 mins)" data-price="250">HOT TOWEL MASSAGE 30 MIN<br>PHP250</button>
+    </div>
+    <div style="text-align:center;">
+      <button id="step1Cancel" class="cancel-btn">Cancel</button>
+      <button id="step1Next" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- Step 2: Select Schedule -->
+  <section id="step2" class="step" aria-label="Select Schedule">
+    <h2>Select Schedule</h2>
+    <div class="date-picker">
+      <label for="appointmentDate">Choose Date: </label>
+      <input type="date" id="appointmentDate" aria-required="true" min="" />
+    </div>
+    <div class="time-slots" role="list" aria-live="polite" aria-label="Available time slots">
+      <!-- Time slot buttons inserted by script -->
+    </div>
+    <div style="text-align:center;">
+      <button id="step2Back" class="cancel-btn">Back</button>
+      <button id="step2Next" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- Step 3: Appointment Confirmation -->
+  <section id="step3" class="step" aria-label="Appointment Confirmation">
+    <h2>Appointment Confirmation</h2>
+    <div class="summary-box" role="region" aria-live="polite" aria-atomic="true">
+      <!-- Summary text inserted by script -->
+    </div>
+    <div class="special-requests">
+      <label for="specialRequests">Special Requests (optional):</label>
+      <textarea id="specialRequests" rows="4" placeholder="Any special requests or notes..."></textarea>
+    </div>
+    <div style="text-align:center;">
+      <button id="step3Back" class="cancel-btn">Back</button>
+      <button id="step3Confirm">Confirm</button>
+    </div>
+  </section>
+
+  <!-- Step 4: Final Confirmation Message -->
+  <section id="step4" class="step" aria-label="Booking Completed">
+    <h2>Appointment Requested!</h2>
+    <div class="success-message" role="alert">
+      Your appointment request has been submitted and is pending confirmation.<br />
+      Thank you for choosing Razor Works!
+    </div>
+    <div style="text-align:center; margin-top: 25px;">
+      <button id="step4Finish">Back to Home</button>
+      <button id="step4Check">Check Appointments</button>
+      <button id="step4New">Book Another Appointment</button>
+    </div>
+  </section>
+
+
+
+</div>
+
+<script>
+  // Check if user is logged in
+  const loggedUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+  if (!loggedUser) {
+    alert('Please log in to book an appointment.');
+    window.location.href = 'login.html';
+  }
+
+  // Appointments DB key
+  const APPOINTMENTS_DB_KEY = "barberconnect_appointments_db_v1";
+
+  let appointmentsDB = [];
+
+  function loadAppointmentsDB() {
+    const raw = localStorage.getItem(APPOINTMENTS_DB_KEY);
+    if (raw) {
+      appointmentsDB = JSON.parse(raw);
+    }
+  }
+
+  function saveAppointmentsDB() {
+    localStorage.setItem(APPOINTMENTS_DB_KEY, JSON.stringify(appointmentsDB));
+  }
+
+  // Load DB on start
+  loadAppointmentsDB();
+
+  // Elements for each step
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const step3 = document.getElementById('step3');
+  const step4 = document.getElementById('step4');
+
+  // Step 1 elements
+  const barberButtons = step1.querySelectorAll('.barber-list button');
+  const serviceButtons = step1.querySelectorAll('.service-list button');
+  const step1NextBtn = document.getElementById('step1Next');
+  const step1CancelBtn = document.getElementById('step1Cancel');
+
+  // Step 2 elements
+  const appointmentDateInput = document.getElementById('appointmentDate');
+  const timeSlotsContainer = step2.querySelector('.time-slots');
+  const step2NextBtn = document.getElementById('step2Next');
+  const step2BackBtn = document.getElementById('step2Back');
+
+  // Step 3 elements
+  const summaryBox = step3.querySelector('.summary-box');
+  const step3ConfirmBtn = document.getElementById('step3Confirm');
+  const step3BackBtn = document.getElementById('step3Back');
+
+  // Step 4 elements
+  const step4FinishBtn = document.getElementById('step4Finish');
+  const step4CheckBtn = document.getElementById('step4Check');
+  const step4NewBtn = document.getElementById('step4New');
+
+  // State
+  let selectedBarber = null;
+  let selectedService = null;
+  let selectedPrice = 0;
+  let selectedDate = null;
+  let selectedTime = null;
+  let specialRequests = '';
+
+  // Utilities: Format date string YYYY-MM-DD => readable "Mon, Jun 21, 2023"
+  function formatDate(dateStr) {
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const d = new Date(dateStr + 'T00:00');
+    return d.toLocaleDateString(undefined, options);
+  }
+
+  // Initialize min date for appointment date input to today's date
+  function setMinDate() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    appointmentDateInput.min = `${yyyy}-${mm}-${dd}`;
+  }
+  setMinDate();
+
+  // Available time slots for simplicity - example slots
+  const availableTimeSlots = [
+    "10:00 AM", "11:00 AM", "12:00 PM",
+    "01:00 PM", "02:00 PM", "03:00 PM",
+    "04:00 PM", "05:00 PM", "06:00 PM",
+    "07:00 PM", "08:00 PM"
+  ];
+
+  // Handle barber selection (Step 1)
+  barberButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      barberButtons.forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+      selectedBarber = button.dataset.barber;
+    });
+  });
+
+  // Handle service selection (Step 1)
+  serviceButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      serviceButtons.forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+      selectedService = button.dataset.service;
+      selectedPrice = parseInt(button.dataset.price, 10);
+      if (selectedBarber && selectedService) {
+        step1NextBtn.disabled = false;
+      }
+    });
+  });
+
+  step1CancelBtn.addEventListener('click', () => {
+    history.back();
+  });
+
+  step1NextBtn.addEventListener('click', () => {
+    if (!selectedBarber || !selectedService) return;
+    step1.classList.remove('active');
+    step2.classList.add('active');
+    appointmentDateInput.value = '';
+    step2NextBtn.disabled = true;
+    selectedDate = null;
+    selectedTime = null;
+    timeSlotsContainer.innerHTML = '';
+  });
+
+  // Step 2 date picker change
+  appointmentDateInput.addEventListener('change', () => {
+    selectedDate = appointmentDateInput.value;
+    if (!selectedDate) {
+      step2NextBtn.disabled = true;
+      timeSlotsContainer.innerHTML = '';
+      return;
+    }
+    populateTimeSlots();
+  });
+
+  // Helper: Get booked times for a barber on a specific date
+  function getBookedTimes(barber, date) {
+    return appointmentsDB
+      .filter(apt => apt.barber === barber && apt.date === date && apt.status === 'confirmed')
+      .map(apt => apt.time);
+  }
+
+  // Populate time slots buttons based on selected date, excluding booked slots for selected barber
+  function populateTimeSlots() {
+    timeSlotsContainer.innerHTML = '';
+    selectedTime = null;
+    step2NextBtn.disabled = true;
+
+    const bookedTimes = getBookedTimes(selectedBarber, selectedDate);
+    const availableSlots = availableTimeSlots.filter(slot => !bookedTimes.includes(slot));
+
+    if (availableSlots.length === 0) {
+      timeSlotsContainer.innerHTML = '<p style="text-align: center; color: #ccc;">No available time slots for this date and barber.</p>';
+      return;
+    }
+
+    availableSlots.forEach(slot => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = slot;
+      btn.setAttribute('aria-label', `Time slot ${slot}`);
+      btn.addEventListener('click', () => {
+        Array.from(timeSlotsContainer.children).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedTime = slot;
+        step2NextBtn.disabled = false;
+      });
+      timeSlotsContainer.appendChild(btn);
+    });
+  }
+
+  step2BackBtn.addEventListener('click', () => {
+    step2.classList.remove('active');
+    step1.classList.add('active');
+  });
+
+  step2NextBtn.addEventListener('click', () => {
+    if (!selectedDate || !selectedTime) return;
+    step2.classList.remove('active');
+    step3.classList.add('active');
+    summaryBox.innerHTML = `
+      <p><strong>Barber:</strong> ${selectedBarber}</p>
+      <p><strong>Service:</strong> ${selectedService}</p>
+      <p><strong>Price:</strong> PHP${selectedPrice}</p>
+      <p><strong>Date:</strong> ${formatDate(selectedDate)}</p>
+      <p><strong>Time:</strong> ${selectedTime}</p>
+    `;
+  });
+
+  step3BackBtn.addEventListener('click', () => {
+    step3.classList.remove('active');
+    step2.classList.add('active');
+  });
+
+  step3ConfirmBtn.addEventListener('click', () => {
+    // Get special requests
+    specialRequests = document.getElementById('specialRequests').value;
+
+    // Save appointment to DB
+    const newAppointment = {
+      id: 'a' + (appointmentsDB.length + 1),
+      userId: loggedUser.id,
+      barber: selectedBarber,
+      service: selectedService,
+      price: selectedPrice,
+      date: selectedDate,
+      time: selectedTime,
+      specialRequests: specialRequests,
+      status: 'pending'
+    };
+    appointmentsDB.push(newAppointment);
+    saveAppointmentsDB();
+
+    // Proceed to success
+    step3.classList.remove('active');
+    step4.classList.add('active');
+  });
+
+  step4FinishBtn.addEventListener('click', () => {
+    window.location.href = 'example_Barber.html';
+  });
+
+  step4CheckBtn.addEventListener('click', () => {
+    window.location.href = 'profile.html';
+  });
+
+  step4NewBtn.addEventListener('click', () => {
+    selectedBarber = null;
+    selectedService = null;
+    selectedPrice = 0;
+    selectedDate = null;
+    selectedTime = null;
+    barberButtons.forEach(btn => btn.classList.remove('selected'));
+    serviceButtons.forEach(btn => btn.classList.remove('selected'));
+    step4.classList.remove('active');
+    step1.classList.add('active');
+    step1NextBtn.disabled = true;
+  });
+</script>
+
+</body>
+</html>

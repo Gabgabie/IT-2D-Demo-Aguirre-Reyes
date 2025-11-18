@@ -1,0 +1,974 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BarberConnect - Admin Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #111;
+    color: white;
+    scroll-behavior: smooth;
+  }
+
+  /* Navbar */
+  nav#nav {
+    background-color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
+
+  nav .logo {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 28px;
+    color: white;
+    font-weight: 500;
+  }
+
+  nav .logout-btn {
+    background-color: #f0b90b;
+    border: none;
+    color: #111;
+    font-weight: 700;
+    padding: 7px 18px;
+    cursor: pointer;
+    border-radius: 40px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+
+  nav .logout-btn:hover {
+    background-color: #c39c07;
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+  }
+
+  .back-btn:hover {
+    color: #f0b90b;
+  }
+
+  /* Admin Container */
+  .admin-container {
+    max-width: 1200px;
+    margin: 120px auto 80px auto;
+    padding: 30px;
+    background-color: #222;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f0b90b;
+  }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .admin-header h1 {
+    font-family: 'Brush Script MT', cursive;
+    color: #f0b90b;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+
+  .admin-header p {
+    font-size: 16px;
+    color: #ccc;
+    margin-bottom: 15px;
+  }
+
+  .add-btn {
+    background-color: #f0b90b;
+    border: none;
+    color: #111;
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 40px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+
+  .add-btn:hover {
+    background-color: #c39c07;
+  }
+
+  /* Search */
+  .search-section {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .search-section input {
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    font-size: 16px;
+  }
+
+  /* Table */
+  .appointments-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .appointments-table th,
+  .appointments-table td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .appointments-table th {
+    background-color: #333;
+    font-weight: 700;
+    color: #f0b90b;
+  }
+
+  .appointments-table td {
+    background-color: #222;
+  }
+
+  .status-confirmed {
+    color: #7ad67a;
+    font-weight: 600;
+  }
+
+  .status-completed {
+    color: #7ad67a;
+    font-weight: 600;
+  }
+
+  .status-cancelled {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 5px;
+  }
+
+  .btn-edit {
+    background-color: #f0b90b;
+    color: #111;
+  }
+
+  .btn-edit:hover {
+    background-color: #c39c07;
+  }
+
+  .btn-delete {
+    background-color: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background-color: #c0392b;
+  }
+
+  .btn-status {
+    background-color: #666;
+    color: white;
+  }
+
+  .btn-status:hover {
+    background-color: #555;
+  }
+
+  .btn-done {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .btn-done:hover {
+    background-color: #2980b9;
+  }
+
+  .btn-view {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .btn-view:hover {
+    background-color: #218838;
+  }
+
+  /* Modal for Editing */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f0b90b;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .modal-content h2 {
+    color: #f0b90b;
+    margin-bottom: 20px;
+  }
+
+  .modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .modal-content input,
+  .modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+  }
+
+  .modal-content .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .modal-actions .btn {
+    padding: 10px 20px;
+  }
+
+  .btn-cancel {
+    background-color: #666;
+    color: white;
+  }
+
+  .btn-cancel:hover {
+    background-color: #555;
+  }
+
+  /* No Appointments */
+  .no-appointments {
+    text-align: center;
+    color: #ccc;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .appointments-table {
+      font-size: 12px;
+    }
+    .appointments-table th,
+    .appointments-table td {
+      padding: 8px;
+    }
+    .search-section input {
+      width: 200px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+   <div class="logo">BarberConnect</div>
+  <button class="logout-btn" onclick="logout()">LOGOUT</button>
+</nav>
+
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p>Manage customer appointments</p>
+    <button class="add-btn" onclick="openAddModal()">Add New Appointment</button>
+  </div>
+
+  <div class="search-section">
+    <label for="status-filter">Filter by Status:</label>
+    <select id="status-filter">
+      <option value="all">All</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <input type="text" id="search-input" placeholder="Search by customer, barber, service, date, or status..." />
+  </div>
+
+  <h2 style="color: #f0b90b; margin-top: 40px;">Pending Appointments</h2>
+  <table class="appointments-table" id="pending-appointments-table">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Barber</th>
+        <th>Service</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="pending-appointments-tbody">
+      <!-- Pending appointments will be populated here -->
+    </tbody>
+  </table>
+  <div class="no-appointments" id="no-pending-appointments" style="display: none;">No pending appointments found.</div>
+
+  <h2 style="color: #f0b90b; margin-top: 40px;">Confirmed Appointments</h2>
+  <table class="appointments-table" id="confirmed-appointments-table">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Barber</th>
+        <th>Service</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="confirmed-appointments-tbody">
+      <!-- Confirmed appointments will be populated here -->
+    </tbody>
+  </table>
+  <div class="no-appointments" id="no-confirmed-appointments" style="display: none;">No confirmed appointments found.</div>
+
+  <h2 style="color: #f0b90b; margin-top: 40px;">Completed Appointments</h2>
+  <table class="appointments-table" id="completed-appointments-table">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Barber</th>
+        <th>Service</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="completed-appointments-tbody">
+      <!-- Completed appointments will be populated here -->
+    </tbody>
+  </table>
+  <div class="no-appointments" id="no-completed-appointments" style="display: none;">No completed appointments found.</div>
+
+  <h2 style="color: #f0b90b; margin-top: 40px;">Cancelled Appointments</h2>
+  <table class="appointments-table" id="cancelled-appointments-table">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Barber</th>
+        <th>Service</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="cancelled-appointments-tbody">
+      <!-- Cancelled appointments will be populated here -->
+    </tbody>
+  </table>
+  <div class="no-appointments" id="no-cancelled-appointments" style="display: none;">No cancelled appointments found.</div>
+
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Edit Appointment</h2>
+    <form id="edit-form">
+      <label for="edit-customer">Customer</label>
+      <input type="text" id="edit-customer" readonly />
+
+      <label for="edit-barber">Barber</label>
+      <select id="edit-barber" required>
+        <option value="John Doe">John Doe</option>
+        <option value="James Smith">James Smith</option>
+        <option value="Mike Johnson">Mike Johnson</option>
+        <option value="Alex Brown">Alex Brown</option>
+        <option value="Sam Lee">Sam Lee</option>
+      </select>
+
+      <label for="edit-service">Service</label>
+      <select id="edit-service" required>
+        <option value="Hair Cut">Hair Cut</option>
+        <option value="Hair Cut & Style">Hair Cut & Style</option>
+        <option value="Shave | Re-Shape">Shave | Re-Shape</option>
+        <option value="Shampoo Blow Dry">Shampoo Blow Dry</option>
+        <option value="Hair and Scalp Spa">Hair and Scalp Spa</option>
+        <option value="Hair Color">Hair Color</option>
+        <option value="Hot Towel with Massage (15 mins)">Hot Towel with Massage (15 mins)</option>
+        <option value="Hot Towel with Massage (30 mins)">Hot Towel with Massage (30 mins)</option>
+      </select>
+
+      <label for="edit-date">Date</label>
+      <input type="date" id="edit-date" required />
+
+      <label for="edit-time">Time</label>
+      <input type="time" id="edit-time" required />
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-edit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div id="add-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Add New Appointment</h2>
+    <form id="add-form">
+      <label for="add-customer">Customer</label>
+      <select id="add-customer" required>
+        <!-- Options will be populated by JavaScript -->
+      </select>
+
+      <label for="add-barber">Barber</label>
+      <select id="add-barber" required>
+        <option value="John Doe">John Doe</option>
+        <option value="James Smith">James Smith</option>
+        <option value="Mike Johnson">Mike Johnson</option>
+        <option value="Alex Brown">Alex Brown</option>
+        <option value="Sam Lee">Sam Lee</option>
+      </select>
+
+      <label for="add-service">Service</label>
+      <select id="add-service" required>
+        <option value="Hair Cut">Hair Cut</option>
+        <option value="Hair Cut & Style">Hair Cut & Style</option>
+        <option value="Shave | Re-Shape">Shave | Re-Shape</option>
+        <option value="Shampoo Blow Dry">Shampoo Blow Dry</option>
+        <option value="Hair and Scalp Spa">Hair and Scalp Spa</option>
+        <option value="Hair Color">Hair Color</option>
+        <option value="Hot Towel with Massage (15 mins)">Hot Towel with Massage (15 mins)</option>
+        <option value="Hot Towel with Massage (30 mins)">Hot Towel with Massage (30 mins)</option>
+      </select>
+
+      <label for="add-date">Date</label>
+      <input type="date" id="add-date" required />
+
+      <label for="add-time">Time</label>
+      <input type="time" id="add-time" required />
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-edit">Add Appointment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Modal -->
+<div id="view-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2>View Appointment Details</h2>
+    <label for="view-customer">Customer</label>
+    <input type="text" id="view-customer" readonly />
+
+    <label for="view-barber">Barber</label>
+    <input type="text" id="view-barber" readonly />
+
+    <label for="view-service">Service</label>
+    <input type="text" id="view-service" readonly />
+
+    <label for="view-date">Date</label>
+    <input type="text" id="view-date" readonly />
+
+    <label for="view-time">Time</label>
+    <input type="text" id="view-time" readonly />
+
+    <label for="view-status">Status</label>
+    <input type="text" id="view-status" readonly />
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-cancel" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Appointments DB key
+  const APPOINTMENTS_DB_KEY = "barberconnect_appointments_db_v1";
+  const USERS_DB_KEY = "barberconnect_users_db_v1";
+
+  // Seed users (1 admin, 5 customers)
+  const seedUsers = [
+    { id: 'a1', username: 'admin1', email: 'admin1@example.com', password: 'admin123', role: 'admin', fullname: 'Admin User' },
+    { id: 'c1', username: 'customer1', email: 'customer1@example.com', password: 'cust123', role: 'customer', fullname: 'Jane Smith' },
+    { id: 'c2', username: 'customer2', email: 'customer2@example.com', password: 'cust456', role: 'customer', fullname: 'John Doe' },
+    { id: 'c3', username: 'customer3', email: 'customer3@example.com', password: 'cust789', role: 'customer', fullname: 'Alice Johnson' },
+    { id: 'c4', username: 'customer4', email: 'customer4@example.com', password: 'cust101', role: 'customer', fullname: 'Bob Wilson' },
+    { id: 'c5', username: 'customer5', email: 'customer5@example.com', password: 'cust202', role: 'customer', fullname: 'Emily Davis' },
+  ];
+
+  // Seed appointments (all for the customer c1)
+  const seedAppointments = [
+    { id: 'a1', userId: 'c1', barber: 'John Doe', service: 'Hair Cut', date: '2023-10-15', time: '10:00', status: 'pending' },
+    { id: 'a2', userId: 'c1', barber: 'James Smith', service: 'Hair Cut & Style', date: '2023-10-20', time: '14:00', status: 'confirmed' },
+    { id: 'a3', userId: 'c1', barber: 'Mike Johnson', service: 'Shave | Re-Shape', date: '2023-10-25', time: '16:00', status: 'confirmed' },
+    { id: 'a4', userId: 'c1', barber: 'Alex Brown', service: 'Hair Color', date: '2023-09-10', time: '11:00', status: 'completed' },
+    { id: 'a5', userId: 'c1', barber: 'Sam Lee', service: 'Hot Towel with Massage (15 mins)', date: '2023-09-05', time: '15:00', status: 'completed' },
+    { id: 'a6', userId: 'c1', barber: 'John Doe', service: 'Hair Cut', date: '2023-11-01', time: '09:00', status: 'confirmed' },
+    { id: 'a7', userId: 'c1', barber: 'James Smith', service: 'Hair Cut & Style', date: '2023-11-05', time: '13:00', status: 'cancelled' },
+    { id: 'a8', userId: 'c1', barber: 'Mike Johnson', service: 'Shave | Re-Shape', date: '2023-10-30', time: '17:00', status: 'confirmed' },
+    { id: 'a9', userId: 'c1', barber: 'Alex Brown', service: 'Shampoo Blow Dry', date: '2023-09-15', time: '12:00', status: 'completed' },
+    { id: 'a10', userId: 'c1', barber: 'Sam Lee', service: 'Hair and Scalp Spa', date: '2023-11-10', time: '10:30', status: 'confirmed' },
+    { id: 'a11', userId: 'c1', barber: 'John Doe', service: 'Hair Color', date: '2023-09-20', time: '14:30', status: 'completed' },
+    { id: 'a12', userId: 'c1', barber: 'James Smith', service: 'Hot Towel with Massage (30 mins)', date: '2023-11-15', time: '16:00', status: 'confirmed' },
+    { id: 'a13', userId: 'c1', barber: 'Mike Johnson', service: 'Hair Cut', date: '2023-08-25', time: '11:00', status: 'completed' },
+    { id: 'a14', userId: 'c1', barber: 'Alex Brown', service: 'Shave | Re-Shape', date: '2023-08-30', time: '15:00', status: 'cancelled' },
+    { id: 'a15', userId: 'c1', barber: 'Sam Lee', service: 'Hair Cut & Style', date: '2023-11-20', time: '10:00', status: 'confirmed' },
+    { id: 'a16', userId: 'c1', barber: 'John Doe', service: 'Hair and Scalp Spa', date: '2023-09-25', time: '13:00', status: 'completed' },
+    { id: 'a17', userId: 'c1', barber: 'James Smith', service: 'Shampoo Blow Dry', date: '2023-11-25', time: '14:00', status: 'confirmed' },
+    { id: 'a18', userId: 'c1', barber: 'Mike Johnson', service: 'Hot Towel with Massage (15 mins)', date: '2023-10-01', time: '16:00', status: 'completed' },
+    { id: 'a19', userId: 'c1', barber: 'Alex Brown', service: 'Hair Color', date: '2023-12-01', time: '11:00', status: 'confirmed' },
+    { id: 'a20', userId: 'c1', barber: 'Sam Lee', service: 'Hair Color', date: '2023-12-01', time: '11:00', status: 'confirmed' },
+  ];
+
+  // Get logged-in user
+  const loggedUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+  if (!loggedUser) {
+    alert('Please log in first.');
+    window.location.href = 'login.html';
+  }
+
+  // Initialize the app
+  function init() {
+    loadUsers();
+    loadAppointments();
+    populateCustomerSelect();
+    filterAppointments();
+    setupEventListeners();
+  }
+
+  // Load users into localStorage if not present
+  function loadUsers() {
+    if (!localStorage.getItem(USERS_DB_KEY)) {
+      localStorage.setItem(USERS_DB_KEY, JSON.stringify(seedUsers));
+    }
+  }
+
+  // Load appointments into localStorage if not present
+  function loadAppointments() {
+    if (!localStorage.getItem(APPOINTMENTS_DB_KEY)) {
+      localStorage.setItem(APPOINTMENTS_DB_KEY, JSON.stringify(seedAppointments));
+    }
+  }
+
+  // Get appointments from localStorage
+  function getAppointments() {
+    return JSON.parse(localStorage.getItem(APPOINTMENTS_DB_KEY)) || [];
+  }
+
+  // Save appointments to localStorage
+  function saveAppointments(appointments) {
+    localStorage.setItem(APPOINTMENTS_DB_KEY, JSON.stringify(appointments));
+  }
+
+  // Get users from localStorage
+  function getUsers() {
+    return JSON.parse(localStorage.getItem(USERS_DB_KEY)) || [];
+  }
+
+  // Populate the main appointments table (pending and confirmed)
+  function populateMainTable(appointments) {
+    const tbody = document.getElementById('appointments-tbody');
+    tbody.innerHTML = '';
+    const filtered = appointments.filter(a => a.status === 'pending' || a.status === 'confirmed');
+    if (filtered.length === 0) {
+      document.getElementById('no-appointments').style.display = 'block';
+      return;
+    }
+    document.getElementById('no-appointments').style.display = 'none';
+    filtered.forEach(appointment => {
+      const user = getUsers().find(u => u.id === appointment.userId);
+      const customerName = user ? user.fullname : 'Unknown';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${customerName}</td>
+        <td>${appointment.barber || 'N/A'}</td>
+        <td>${appointment.service}</td>
+        <td>${appointment.date}</td>
+        <td>${appointment.time}</td>
+        <td class="status-${appointment.status}">${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}</td>
+        <td>
+          <button class="btn btn-edit" data-id="${appointment.id}">Edit</button>
+          <button class="btn btn-done" data-id="${appointment.id}">Done</button>
+          <button class="btn btn-status" data-id="${appointment.id}">Cancel</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Populate the pending appointments table (only pending)
+  function populatePendingTable(appointments) {
+    const tbody = document.getElementById('pending-appointments-tbody');
+    tbody.innerHTML = '';
+    const filtered = appointments.filter(a => a.status === 'pending');
+    if (filtered.length === 0) {
+      document.getElementById('no-pending-appointments').style.display = 'block';
+      return;
+    }
+    document.getElementById('no-pending-appointments').style.display = 'none';
+    filtered.forEach(appointment => {
+      const user = getUsers().find(u => u.id === appointment.userId);
+      const customerName = user ? user.fullname : 'Unknown';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${customerName}</td>
+        <td>${appointment.barber || 'N/A'}</td>
+        <td>${appointment.service}</td>
+        <td>${appointment.date}</td>
+        <td>${appointment.time}</td>
+        <td class="status-${appointment.status}">${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}</td>
+        <td>
+          <button class="btn btn-edit" data-id="${appointment.id}">Edit</button>
+          <button class="btn btn-done" data-id="${appointment.id}">Confirm</button>
+          <button class="btn btn-delete" data-id="${appointment.id}">Cancel</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Populate the confirmed appointments table (only confirmed)
+  function populateConfirmedTable(appointments) {
+    const tbody = document.getElementById('confirmed-appointments-tbody');
+    tbody.innerHTML = '';
+    const filtered = appointments.filter(a => a.status === 'confirmed');
+    if (filtered.length === 0) {
+      document.getElementById('no-confirmed-appointments').style.display = 'block';
+      return;
+    }
+    document.getElementById('no-confirmed-appointments').style.display = 'none';
+    filtered.forEach(appointment => {
+      const user = getUsers().find(u => u.id === appointment.userId);
+      const customerName = user ? user.fullname : 'Unknown';
+      const row = document.createElement('tr');
+      const buttons = `<button class="btn btn-edit" data-id="${appointment.id}">Edit</button><button class="btn btn-done" data-id="${appointment.id}">Done</button><button class="btn btn-delete" data-id="${appointment.id}">Cancel</button>`;
+      row.innerHTML = `
+        <td>${customerName}</td>
+        <td>${appointment.barber || 'N/A'}</td>
+        <td>${appointment.service}</td>
+        <td>${appointment.date}</td>
+        <td>${appointment.time}</td>
+        <td class="status-${appointment.status}">${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}</td>
+        <td>${buttons}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Populate the completed appointments table (only completed)
+  function populateCompletedTable(appointments) {
+    const tbody = document.getElementById('completed-appointments-tbody');
+    tbody.innerHTML = '';
+    const filtered = appointments.filter(a => a.status === 'completed');
+    if (filtered.length === 0) {
+      document.getElementById('no-completed-appointments').style.display = 'block';
+      return;
+    }
+    document.getElementById('no-completed-appointments').style.display = 'none';
+    filtered.forEach(appointment => {
+      const user = getUsers().find(u => u.id === appointment.userId);
+      const customerName = user ? user.fullname : 'Unknown';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${customerName}</td>
+        <td>${appointment.barber || 'N/A'}</td>
+        <td>${appointment.service}</td>
+        <td>${appointment.date}</td>
+        <td>${appointment.time}</td>
+        <td class="status-${appointment.status}">${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}</td>
+        <td>
+          <button class="btn btn-view" data-id="${appointment.id}">View</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Populate the cancelled appointments table (only cancelled)
+  function populateCancelledTable(appointments) {
+    const tbody = document.getElementById('cancelled-appointments-tbody');
+    tbody.innerHTML = '';
+    const filtered = appointments.filter(a => a.status === 'cancelled');
+    if (filtered.length === 0) {
+      document.getElementById('no-cancelled-appointments').style.display = 'block';
+      return;
+    }
+    document.getElementById('no-cancelled-appointments').style.display = 'none';
+    filtered.forEach(appointment => {
+      const user = getUsers().find(u => u.id === appointment.userId);
+      const customerName = user ? user.fullname : 'Unknown';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${customerName}</td>
+        <td>${appointment.barber || 'N/A'}</td>
+        <td>${appointment.service}</td>
+        <td>${appointment.date}</td>
+        <td>${appointment.time}</td>
+        <td class="status-${appointment.status}">${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}</td>
+        <td>
+          <button class="btn btn-view" data-id="${appointment.id}">View</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+
+
+  // Populate customer select for add modal
+  function populateCustomerSelect() {
+    const select = document.getElementById('add-customer');
+    select.innerHTML = '';
+    const customers = getUsers().filter(u => u.role === 'customer' || u.role === 'user');
+    customers.forEach(customer => {
+      const option = document.createElement('option');
+      option.value = customer.id;
+      option.textContent = customer.fullname;
+      select.appendChild(option);
+    });
+  }
+
+  // Open add modal
+  function openAddModal() {
+    document.getElementById('add-modal').classList.remove('hidden');
+  }
+
+  // Open edit modal
+  function openEditModal(id) {
+    const appointments = getAppointments();
+    const appointment = appointments.find(a => a.id === id);
+    if (!appointment) return;
+    const user = getUsers().find(u => u.id === appointment.userId);
+    document.getElementById('edit-customer').value = user ? user.fullname : '';
+    document.getElementById('edit-barber').value = appointment.barber || '';
+    document.getElementById('edit-service').value = appointment.service;
+    document.getElementById('edit-date').value = appointment.date;
+    document.getElementById('edit-time').value = appointment.time;
+    document.getElementById('edit-form').dataset.id = id;
+    document.getElementById('edit-modal').classList.remove('hidden');
+  }
+
+  // Open view modal
+  function openViewModal(id) {
+    const appointments = getAppointments();
+    const appointment = appointments.find(a => a.id === id);
+    if (!appointment) return;
+    const user = getUsers().find(u => u.id === appointment.userId);
+    document.getElementById('view-customer').value = user ? user.fullname : '';
+    document.getElementById('view-barber').value = appointment.barber || '';
+    document.getElementById('view-service').value = appointment.service;
+    document.getElementById('view-date').value = appointment.date;
+    document.getElementById('view-time').value = appointment.time;
+    document.getElementById('view-status').value = appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1);
+    document.getElementById('view-modal').classList.remove('hidden');
+  }
+
+  // Close modal
+  function closeModal() {
+    document.getElementById('edit-modal').classList.add('hidden');
+    document.getElementById('add-modal').classList.add('hidden');
+    document.getElementById('view-modal').classList.add('hidden');
+  }
+
+  // Handle add form submission
+  function handleAddForm(event) {
+    event.preventDefault();
+    const customer = document.getElementById('add-customer').value;
+    const barber = document.getElementById('add-barber').value;
+    const service = document.getElementById('add-service').value;
+    const date = document.getElementById('add-date').value;
+    const time = document.getElementById('add-time').value;
+    const appointments = getAppointments();
+    const newId = 'a' + (appointments.length + 1);
+    appointments.push({ id: newId, userId: customer, barber, service, date, time, status: 'confirmed' });
+    saveAppointments(appointments);
+    filterAppointments();
+    closeModal();
+    document.getElementById('add-form').reset();
+  }
+
+  // Handle edit form submission
+  function handleEditForm(event) {
+    event.preventDefault();
+    const id = event.target.dataset.id;
+    const barber = document.getElementById('edit-barber').value;
+    const service = document.getElementById('edit-service').value;
+    const date = document.getElementById('edit-date').value;
+    const time = document.getElementById('edit-time').value;
+    const appointments = getAppointments();
+    const index = appointments.findIndex(a => a.id === id);
+    if (index !== -1) {
+      appointments[index].barber = barber;
+      appointments[index].service = service;
+      appointments[index].date = date;
+      appointments[index].time = time;
+      saveAppointments(appointments);
+      filterAppointments(); // Reapply current filters after update
+    }
+    closeModal();
+  }
+
+
+
+  // Update status
+  function updateStatus(id, status) {
+    const appointments = getAppointments();
+    const index = appointments.findIndex(a => a.id === id);
+    if (index !== -1) {
+      appointments[index].status = status;
+      saveAppointments(appointments);
+      filterAppointments(); // Reapply current filters after update
+    }
+  }
+
+  // Delete appointment
+  function deleteAppointment(id) {
+    const appointments = getAppointments();
+    const filtered = appointments.filter(a => a.id !== id);
+    saveAppointments(filtered);
+    filterAppointments(); // Reapply current filters after update
+  }
+
+  // Filter appointments
+  function filterAppointments() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const statusFilter = document.getElementById('status-filter').value;
+    let appointments = getAppointments();
+    if (loggedUser.role !== 'admin') {
+      appointments = appointments.filter(a => a.userId === loggedUser.id);
+    }
+    const filtered = appointments.filter(appointment => {
+      const user = getUsers().find(u => u.id === appointment.userId);
+      const customerName = user && user.fullname ? user.fullname.toLowerCase() : '';
+      const matchesQuery = customerName.includes(query) ||
+                           (appointment.barber || '').toLowerCase().includes(query) ||
+                           appointment.service.toLowerCase().includes(query) ||
+                           appointment.date.includes(query) ||
+                           appointment.status.toLowerCase().includes(query);
+      const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter;
+      return matchesQuery && matchesStatus;
+    });
+    populatePendingTable(filtered.filter(a => a.status === 'pending'));
+    populateConfirmedTable(filtered.filter(a => a.status === 'confirmed'));
+    populateCompletedTable(filtered.filter(a => a.status === 'completed'));
+    populateCancelledTable(filtered.filter(a => a.status === 'cancelled'));
+  }
+
+  // Logout
+  function logout() {
+    // For demo, just redirect to login or home
+    window.location.href = 'login.html';
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    document.getElementById('search-input').addEventListener('input', filterAppointments);
+    document.getElementById('status-filter').addEventListener('change', filterAppointments);
+    document.getElementById('add-form').addEventListener('submit', handleAddForm);
+    document.getElementById('edit-form').addEventListener('submit', handleEditForm);
+
+    // Event delegation for pending table buttons
+    document.getElementById('pending-appointments-tbody').addEventListener('click', function(event) {
+      const target = event.target;
+      const id = target.getAttribute('data-id');
+      if (target.classList.contains('btn-edit')) {
+        openEditModal(id);
+      } else if (target.classList.contains('btn-done')) {
+        updateStatus(id, 'confirmed');
+      } else if (target.classList.contains('btn-delete')) {
+        updateStatus(id, 'cancelled');
+      }
+    });
+
+    // Event delegation for confirmed table buttons
+    document.getElementById('confirmed-appointments-tbody').addEventListener('click', function(event) {
+      const target = event.target;
+      const id = target.getAttribute('data-id');
+      if (target.classList.contains('btn-edit')) {
+        openEditModal(id);
+      } else if (target.classList.contains('btn-done')) {
+        updateStatus(id, 'completed');
+      } else if (target.classList.contains('btn-delete')) {
+        updateStatus(id, 'cancelled');
+      }
+    });
+
+    // Event delegation for completed table buttons
+    document.getElementById('completed-appointments-tbody').addEventListener('click', function(event) {
+      const target = event.target;
+      const id = target.getAttribute('data-id');
+      if (target.classList.contains('btn-view')) {
+        openViewModal(id);
+      }
+    });
+
+    // Event delegation for cancelled table buttons
+    document.getElementById('cancelled-appointments-tbody').addEventListener('click', function(event) {
+      const target = event.target;
+      const id = target.getAttribute('data-id');
+      if (target.classList.contains('btn-view')) {
+        openViewModal(id);
+      }
+    });
+  }
+
+  // Run init on load
+  window.onload = init;
+</script>
+</body>
+</html>
